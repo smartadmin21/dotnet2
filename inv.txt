@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+
+'''
+Example custom dynamic inventory script for Ansible, in Python.
+'''
+
+import os
+import sys
+import argparse
+import csv
+
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
+csvfilepath = "input.csv"
+jsonFilePath = "output.json"
+
+
+class ExampleInventory(object):
+
+    def __init__(self):
+        pass
+
+    # Example inventory for testing.
+    def example_inventory(self):
+        # Converting input.csv to dictionary
+        del_hosts = []  # add hosts to delete it from final list of hosts
+        new_data_dict = []
+        with open(csvfilepath, 'r') as data_file:
+            data = csv.DictReader(data_file, delimiter=",")
+            for row in data:
+                grp_data= {row["Groups"]:row["hosts"].split(",")}
+                print(grp_data)
+                new_data_dict.append(grp_data)
+
+        for host in del_hosts:
+            for group in new_data_dict:
+                for key,val in group.items():
+                    if host in val:
+                        val.remove(host)
+        return new_data_dict
+
+# Get the inventory.
+x = ExampleInventory()
+print(x.example_inventory())
